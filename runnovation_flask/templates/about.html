@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}About & Help - Runnovation{% endblock %}
+
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">About Runnovation</h1>
+
+<div class="space-y-4">
+
+    <section class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+        <p class="text-sm text-white mb-2">
+            Runnovation is a desktop-focused web application that combines Strava route data
+            with community feedback to support safer and smarter running decisions in
+            Urdaneta City.
+        </p>
+    </section>
+
+    <section class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+        <h2 class="text-sm font-semibold mb-2">How Strava Data is Used</h2>
+        <ul class="text-[11px] text-[var(--text-secondary)] list-disc ml-5 space-y-1">
+            <li>Pace, distance, elevation, and frequency are imported from Strava activities.</li>
+            <li>Route-based analytics (difficulty, elevation profiles, trends) are derived
+                from Strava data only.</li>
+            <li>All screens that use Strava data show labels like
+                <strong>“Data Source: Strava API”</strong>.
+            </li>
+        </ul>
+    </section>
+
+    <section class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+        <h2 class="text-sm font-semibold mb-2">Which Data Belongs to Runnovation?</h2>
+        <ul class="text-[11px] text-[var(--text-secondary)] list-disc ml-5 space-y-1">
+            <li>Route feedback (difficulty and safety ratings).</li>
+            <li>User comments and community insights.</li>
+            <li>Usability feedback (SUS / SUMI) and system usage metrics.</li>
+            <li>These are always labeled as <strong>“Runnovation App Data”</strong> or
+                <strong>“User-Submitted Data”</strong>.
+            </li>
+        </ul>
+    </section>
+
+    <section class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+        <h2 class="text-sm font-semibold mb-2">SDG Alignment</h2>
+        <ul class="text-[11px] text-[var(--text-secondary)] list-disc ml-5 space-y-1">
+            <li>SDG 3 – Good Health and Well-Being (promoting active lifestyles).</li>
+            <li>SDG 9 – Industry, Innovation, and Infrastructure (data-driven route planning).</li>
+            <li>SDG 11 – Sustainable Cities and Communities (safer, more informed mobility).</li>
+        </ul>
+    </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Forgot Password - Runnovation{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center">
+    <div class="w-full max-w-lg bg-[var(--bg-card)] border border-[#333] rounded-2xl px-8 py-7 shadow-xl">
+
+        <h2 class="text-xl font-semibold mb-1">Forgot Password</h2>
+        <p class="text-[12px] text-[var(--text-secondary)] mb-6">
+            Enter your email and we'll send a reset link.
+        </p>
+
+        <form method="post" class="space-y-4">
+            <div>
+                <label class="block text-xs text-[var(--text-secondary)] mb-1">Email</label>
+                <input name="email" type="email" required
+                       class="w-full bg-[#1A1A1A] border border-[#444] rounded-md px-3 py-2
+                              focus:border-[var(--brand-orange)] outline-none">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-[var(--brand-orange)] text-black font-semibold rounded-md py-2 text-sm">
+                Send Reset Link
+            </button>
+        </form>
+
+        <div class="flex justify-center text-[11px] text-[var(--text-secondary)] mt-4">
+            <a href="{{ url_for('login') }}" class="hover:text-[var(--brand-orange)]">Back to Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

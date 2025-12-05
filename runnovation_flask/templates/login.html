@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Login - Runnovation{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center">
+    <div class="w-full max-w-lg bg-[var(--bg-card)] border border-[#333] rounded-2xl px-8 py-7 shadow-xl">
+
+        <h2 class="text-xl font-semibold mb-1">Login</h2>
+        <p class="text-[12px] text-[var(--text-secondary)] mb-6">
+            Sign in to access your analytics or connect your Strava account.
+        </p>
+
+        <form method="post" class="space-y-4">
+            <div>
+                <label class="block text-xs text-[var(--text-secondary)] mb-1">Email</label>
+                <input name="email" type="email" required
+                       class="w-full bg-[#1A1A1A] border border-[#444] rounded-md px-3 py-2 text-sm
+                              focus:border-[var(--brand-orange)] outline-none">
+            </div>
+            <div>
+                <label class="block text-xs text-[var(--text-secondary)] mb-1">Password</label>
+                <input name="password" type="password" required
+                       class="w-full bg-[#1A1A1A] border border-[#444] rounded-md px-3 py-2 text-sm
+                              focus:border-[var(--brand-orange)] outline-none">
+            </div>
+
+            <!-- Buttons row -->
+            <div class="space-y-2 mt-4">
+                <!-- Normal login → Dashboard -->
+                <button type="submit" name="next" value="dashboard"
+                        class="w-full bg-[var(--brand-orange)] text-black font-semibold rounded-md py-2 text-sm">
+                    Login
+                </button>
+
+                <!-- Login and go straight to Connect Strava -->
+                <button type="submit" name="next" value="connect_strava"
+                        class="w-full border border-[var(--brand-orange)] text-[var(--brand-orange)] font-semibold rounded-md py-2 text-sm">
+                    Login &amp; Connect Strava Account
+                </button>
+            </div>
+        </form>
+
+        <div class="flex justify-between text-[11px] text-[var(--text-secondary)] mt-4">
+            <a href="{{ url_for('forgot_password') }}" class="hover:text-[var(--brand-orange)]">
+                Forgot Password?
+            </a>
+            <a href="{{ url_for('register') }}" class="hover:text-[var(--brand-orange)]">
+                Create Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
