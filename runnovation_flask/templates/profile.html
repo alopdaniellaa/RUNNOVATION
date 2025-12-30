@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Profile - Runnovation{% endblock %}
+
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">User Profile</h1>
+
+<div class="grid md:grid-cols-2 gap-6">
+
+    <!-- ACCOUNT DETAILS -->
+    <div class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-xl">
+        <form method="post" class="space-y-4">
+            <input type="hidden" name="action" value="update_profile">
+
+            <h3 class="text-sm font-semibold mb-1">Account Details</h3>
+
+            <div>
+                <label class="block text-xs text-[var(--text-secondary)] mb-1">Full Name</label>
+                <input name="full_name" value="{{ user.full_name }}" required
+                       class="w-full bg-[#1A1A1A] border border-[#444] rounded-md px-3 py-2 text-sm
+                              focus:border-[var(--brand-orange)] outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs text-[var(--text-secondary)] mb-1">Email</label>
+                <input name="email" type="email" value="{{ user.email }}" required
+                       class="w-full bg-[#1A1A1A] border border-[#444] rounded-md px-3 py-2 text-sm
+                              focus:border-[var(--brand-orange)] outline-none">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-[var(--brand-orange)] text-black font-semibold rounded-md py-2 text-sm">
+                Update Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="space-y-5">
+
+        <!-- CHANGE PASSWORD -->
+        <div class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-xl">
+            <form method="post" class="space-y-3">
+                <input type="hidden" name="action" value="change_password">
+
+                <h3 class="text-sm font-semibold mb-1">Change Password</h3>
+
+                <input name="current_password" type="password" required class="input">
+                <input name="new_password" type="password" required class="input">
+                <input name="confirm_password" type="password" required class="input">
+
+                <button type="submit"
+                        class="w-full bg-[#333] text-white rounded-md py-2 text-sm hover:bg-[#404040]">
+                    Change Password
+                </button>
+            </form>
+        </div>
+
+        <!-- STRAVA CONNECTION -->
+        <div class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+            <h3 class="text-sm font-semibold mb-3">Strava Connection</h3>
+
+            {% if user.strava_connected %}
+                <p class="text-[11px] text-[var(--text-secondary)] mb-4">
+                    Status: <span class="text-emerald-400 font-semibold">Connected</span>
+                </p>
+
+                <form method="post">
+                    <input type="hidden" name="action" value="disconnect_strava">
+                    <button type="submit"
+                            class="w-full rounded-md py-2 text-sm font-semibold border border-[#444] text-red-300 hover:border-red-400">
+                        Disconnect Strava
+                    </button>
+                </form>
+            {% else %}
+                <p class="text-[11px] text-[var(--text-secondary)] mb-4">
+                    Status: <span class="text-red-300 font-semibold">Not Connected</span>
+                </p>
+
+                <a href="{{ url_for('connect_strava_link_existing') }}"
+                   class="block text-center w-full rounded-md py-2 text-sm font-semibold bg-[var(--brand-orange)] text-black">
+                    Connect Strava
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<div class="mt-6">
+    <a href="{{ url_for('delete_account') }}"
+       class="text-[11px] text-red-400 underline">
+        Delete Account
+    </a>
+</div>
+{% endblock %}

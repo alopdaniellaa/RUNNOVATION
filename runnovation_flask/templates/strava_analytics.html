@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Strava Analytics - Runnovation{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-2">🏃‍♂️ Strava Analytics Dashboard</h1>
+<p class="text-sm text-[var(--text-secondary)] mb-6">
+    Data Source: <span class="text-white font-medium">Strava API</span>
+</p>
+
+<!-- Summary cards -->
+<div class="grid gap-6 md:grid-cols-4 mb-10">
+    <div class="bg-gradient-to-br from-[#2C2C2C] to-[#1F1F1F] border border-[#333] rounded-3xl p-5 shadow-lg">
+        <p class="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-2">Total Runs</p>
+        <p class="text-3xl font-bold text-[var(--brand-orange)]">{{ run_count }}</p>
+    </div>
+    <div class="bg-gradient-to-br from-[#2C2C2C] to-[#1F1F1F] border border-[#333] rounded-3xl p-5 shadow-lg">
+        <p class="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-2">Total Distance</p>
+        <p class="text-3xl font-bold text-[var(--brand-orange)]">
+            {{ "%.1f"|format(total_distance) }} km
+        </p>
+    </div>
+    <div class="bg-gradient-to-br from-[#2C2C2C] to-[#1F1F1F] border border-[#333] rounded-3xl p-5 shadow-lg">
+        <p class="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-2">Average Pace</p>
+        <p class="text-3xl font-bold text-[var(--brand-orange)]">
+            {{ "%.2f"|format(avg_pace) }} min/km
+        </p>
+    </div>
+    <div class="bg-gradient-to-br from-[#2C2C2C] to-[#1F1F1F] border border-[#333] rounded-3xl p-5 shadow-lg">
+        <p class="text-[11px] text-[var(--text-secondary)] uppercase tracking-wider mb-2">Average Elevation</p>
+        <p class="text-3xl font-bold text-[var(--brand-orange)]">
+            {{ "%.1f"|format(avg_elev) }} m
+        </p>
+    </div>
+</div>
+
+<!-- Chart section -->
+<div class="mb-10">
+    <h2 class="text-xl font-semibold mb-4">📊 Visual Insights</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-[var(--bg-card)] rounded-2xl p-4 shadow-md">
+            <canvas id="paceChart"></canvas>
+        </div>
+        <div class="bg-[var(--bg-card)] rounded-2xl p-4 shadow-md">
+            <canvas id="distanceChart"></canvas>
+        </div>
+        <div class="bg-[var(--bg-card)] rounded-2xl p-4 shadow-md">
+            <canvas id="elevationChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// --- Get CSS variable for brand-orange ---
+const root = getComputedStyle(document.documentElement);
+const orange = root.getPropertyValue('--brand-orange').trim();
+
+// --- Chart data ---
+const labels = {{ run_labels|tojson }};
+const paceData = {{ paces|tojson }};
+const distanceData = {{ distances|tojson }};
+const elevationData = {{ elevations|tojson }};
+
+// --- Pace Line Chart ---
+const paceCtx = document.getElementById('paceChart');
+if (paceCtx) {
+    new Chart(paceCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Pace (min/km)',
+                data: paceData,
+                borderColor: orange,
+                backgroundColor: 'rgba(252, 76, 3, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointBackgroundColor: orange,
+                pointBorderColor: orange
+            }]
+        },
+        options: {
+            plugins: { legend: { display: true } },
+            scales: { y: { beginAtZero: false } }
+        }
+    });
+}
+
+// --- Distance Bar Chart ---
+const distanceCtx = document.getElementById('distanceChart');
+if (distanceCtx) {
+    new Chart(distanceCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Distance (km)',
+                data: distanceData,
+                backgroundColor: orange,
+                borderColor: orange,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: { legend: { display: true } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+// --- Elevation Line Chart ---
+const elevationCtx = document.getElementById('elevationChart');
+if (elevationCtx) {
+    new Chart(elevationCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Elevation Gain (m)',
+                data: elevationData,
+                borderColor: orange,
+                backgroundColor: 'rgba(252, 180, 3, 0.2)',
+                tension: 0.3,
+                fill: false,
+                pointBackgroundColor: orange,
+                pointBorderColor: orange
+            }]
+        },
+        options: {
+            plugins: { legend: { display: true } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+</script>
+{% endblock %}

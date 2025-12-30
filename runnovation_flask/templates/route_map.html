@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}User Routes Map{% endblock %}
+
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">My Routes Map</h1>
+
+<div id="map" class="w-full h-[500px] rounded-xl shadow-lg"></div>
+
+<!-- Leaflet CSS + JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const routes = {{ routes|tojson }};
+    const map = L.map('map').setView([10.3157, 123.8854], 13); // default center (Cebu)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    routes.forEach(r => {
+        // color based on difficulty
+        let color = "#FF9900"; // default orange
+        if(r.difficulty.toLowerCase() === "easy") color = "#33CC33";
+        else if(r.difficulty.toLowerCase() === "hard") color = "#FF3333";
+
+        const polyline = L.polyline(r.coordinates, {
+            color: color,
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map);
+
+        polyline.bindPopup(`<strong>${r.name}</strong><br>
+                            Distance: ${r.distance_km} km<br>
+                            Difficulty: ${r.difficulty}<br>
+                            Popularity: ${r.popularity}`);
+    });
+
+    // Fit map to all routes
+    const allCoords = routes.flatMap(r => r.coordinates);
+    if(allCoords.length > 0){
+        map.fitBounds(allCoords);
+    }
+</script>
+{% endblock %}

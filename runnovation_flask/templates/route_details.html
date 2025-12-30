@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Route Details - Runnovation{% endblock %}
+
+{% block content %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- PAGE HEADER -->
+<header class="mb-6">
+  <h1 class="text-3xl font-bold">Route Details</h1>
+  <p class="text-base text-[var(--text-secondary)]">
+    Follow the highlighted route and start your run
+  </p>
+</header>
+
+<!-- MAIN GRID -->
+<section class="grid lg:grid-cols-3 gap-6 mb-10">
+
+  <!-- MAP -->
+  <div class="lg:col-span-2 bg-[var(--bg-card)] border border-[#333] rounded-2xl p-4 shadow-lg">
+    <div class="mb-3">
+      <p class="text-lg font-semibold">Route Map</p>
+      <p class="text-sm text-[var(--text-secondary)]">
+        Highlighted route based on Strava data
+      </p>
+    </div>
+
+    <div id="map" class="w-full h-[460px] rounded-xl border border-[#333]"></div>
+  </div>
+
+  <!-- DETAILS -->
+  <div class="flex flex-col justify-between bg-transparent p-2">
+
+    <div>
+      <h2 class="text-3xl font-bold text-[var(--brand-orange)] mb-4">
+        {{ route.name }}
+      </h2>
+
+      <div class="space-y-3 text-base">
+        <div class="flex justify-between">
+          <span class="text-[var(--text-secondary)]">Distance</span>
+          <span class="font-semibold">{{ route.distance_km }} km</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[var(--text-secondary)]">Avg Pace</span>
+          <span class="font-semibold">{{ route.avg_pace_min_per_km }} min/km</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[var(--text-secondary)]">Elevation Gain</span>
+          <span class="font-semibold">{{ route.elevation_gain }} m</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[var(--text-secondary)]">Difficulty</span>
+          <span class="font-semibold">{{ route.difficulty or "Unknown" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUN BUTTON -->
+    <button
+      id="runNowBtn"
+      class="mt-8 w-full py-4 rounded-xl bg-[var(--brand-orange)] text-black font-bold text-lg hover:opacity-90 transition">
+      🏃 Run This Route
+    </button>
+
+    <!-- FEEDBACK (hidden) -->
+    <a
+      id="feedbackBtn"
+      href="{{ url_for('submit_feedback', route_id=route.id) }}"
+      class="hidden mt-4 text-center py-3 rounded-xl border border-[var(--brand-orange)] text-[var(--brand-orange)] font-semibold hover:bg-[var(--brand-orange)] hover:text-black transition">
+      Submit Route Feedback
+    </a>
+
+  </div>
+
+</section>
+
+<!-- COMMUNITY INSIGHTS -->
+<section class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg mb-10">
+  <h3 class="text-xl font-semibold mb-3">Community Insights</h3>
+
+  <div class="grid md:grid-cols-2 gap-4 text-base">
+    <div>
+      <span class="text-[var(--text-secondary)]">Difficulty Rating</span>
+      <div class="font-semibold">
+        {{ agg.avg_diff or "No data yet" }}
+      </div>
+    </div>
+    <div>
+      <span class="text-[var(--text-secondary)]">Safety Score</span>
+      <div class="font-semibold">
+        {{ agg.avg_safety or "No data yet" }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOATING RUN PANEL -->
+<div
+  id="runPanel"
+  class="hidden fixed bottom-6 right-6 w-80 bg-[#1f1f1f] border border-[#333] rounded-2xl shadow-2xl p-5 z-50">
+
+  <p class="font-semibold text-lg mb-2">🏃 Running...</p>
+  <p class="text-sm text-[var(--text-secondary)] mb-4">
+    You are currently following this route
+  </p>
+
+  <div class="flex gap-3">
+    <button
+      id="cancelRun"
+      class="flex-1 py-2 rounded-lg border border-[#555] text-sm hover:bg-[#333]">
+      Cancel
+    </button>
+    <button
+      id="finishRun"
+      class="flex-1 py-2 rounded-lg bg-[var(--brand-orange)] text-black font-semibold">
+      Finish
+    </button>
+  </div>
+</div>
+
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const coords = {{ route.coordinates|tojson|safe if route.coordinates else "[]" }};
+  const map = L.map("map").setView([15.9767, 120.5710], 14);
+
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "© OpenStreetMap © CARTO"
+  }).addTo(map);
+
+  if (coords.length > 0) {
+    // glow
+    L.polyline(coords, {
+      color: "#FC4C03",
+      weight: 14,
+      opacity: 0.15
+    }).addTo(map);
+
+    // main line
+    const routeLine = L.polyline(coords, {
+      color: "#FC4C03",
+      weight: 6,
+      opacity: 0.95
+    }).addTo(map);
+
+    map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+  }
+
+  // RUN FLOW
+  const runBtn = document.getElementById("runNowBtn");
+  const panel = document.getElementById("runPanel");
+  const finishBtn = document.getElementById("finishRun");
+  const cancelBtn = document.getElementById("cancelRun");
+  const feedbackBtn = document.getElementById("feedbackBtn");
+
+  runBtn.onclick = () => panel.classList.remove("hidden");
+  cancelBtn.onclick = () => panel.classList.add("hidden");
+  finishBtn.onclick = () => {
+    panel.classList.add("hidden");
+    feedbackBtn.classList.remove("hidden");
+  };
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const map = L.map("map").setView([15.9767, 120.5710], 15);
+
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "© OpenStreetMap contributors © CARTO"
+  }).addTo(map);
+
+  const coords = {{ route.coordinates | tojson | safe if route.coordinates else "null" }};
+
+  if (coords && coords.length > 1) {
+    const routeLine = L.polyline(coords, {
+      color: "#FC4C03",
+      weight: 7,
+      opacity: 0.95,
+      lineCap: "round",
+      lineJoin: "round"
+    }).addTo(map);
+
+    map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+  } else {
+    console.warn("No route coordinates found");
+  }
+
+});
+</script>
+
+{% endblock %}

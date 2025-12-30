@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Connect Strava - Runnovation{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="w-full max-w-xl bg-[var(--bg-card)] border border-[#333] rounded-2xl px-8 py-7 shadow-xl">
+        <h2 class="text-xl font-semibold mb-2">Connect Strava Account</h2>
+
+        {% if user and user.strava_connected %}
+            <p class="text-sm text-[var(--text-secondary)] mb-4">
+                Your Strava account is already <span class="text-emerald-400 font-semibold">connected</span>.
+            </p>
+
+            <a href="{{ url_for('strava_analytics') }}"
+               class="inline-block mt-2 px-4 py-2 rounded-md bg-[var(--brand-orange)] text-black text-sm font-semibold">
+                Go to Strava Analytics
+            </a>
+        {% else %}
+            <p class="text-sm text-[var(--text-secondary)] mb-4">
+                This will redirect you to Strava for authorization.
+            </p>
+
+            <!-- 🔴 FIX: explicit endpoint -->
+            <a href="{{ url_for('connect_strava_link_existing') }}"
+               class="w-full block text-center bg-[var(--brand-orange)] text-black font-semibold rounded-md py-2 text-sm">
+                Connect Strava Account
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

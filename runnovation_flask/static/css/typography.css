@@ -1,0 +1,89 @@
+/* ===============================
+   RUNNOVATION GLOBAL TYPOGRAPHY
+   =============================== */
+
+/* Base font size (GLOBAL) */
+html {
+  font-size: 16px; /* default browser = 16px */
+}
+
+/* Body text */
+body {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.25rem; /* ~36px */
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.875rem; /* ~30px */
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5rem; /* ~24px */
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.25rem; /* ~20px */
+  font-weight: 600;
+}
+
+/* Paragraphs */
+p {
+  font-size: 1rem; /* 16px */
+}
+
+/* Small text (labels, meta info) */
+.small-text,
+.text-xs,
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: 0.875rem !important; /* 14px */
+}
+
+/* Buttons */
+button,
+a.button,
+.btn {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  font-size: 1rem;
+}
+
+/* Cards */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-meta {
+  font-size: 0.95rem;
+  color: #b0b0b0;
+}
+
+/* Dashboard numbers */
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Map legend */
+.map-legend {
+  font-size: 0.95rem;
+}
+
+.map-legend h4 {
+  font-size: 1.1rem;
+}

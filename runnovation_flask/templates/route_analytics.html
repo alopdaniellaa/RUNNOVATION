@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Route Analytics - Runnovation{% endblock %}
+
+{% block content %}
+
+<!-- =========================
+  PAGE HEADER
+========================= -->
+<header class="mb-6">
+  <h1 class="text-3xl font-bold">Route Analytics</h1>
+  <p class="text-base text-[var(--text-secondary)]">
+    Aggregated Strava heatmaps & community insights for runners in
+    <span class="text-white font-medium">Urdaneta City</span>
+  </p>
+</header>
+
+<!-- =========================
+  STYLES (LEGEND + MAP TEXT)
+========================= -->
+<style>
+  /* Make Leaflet text readable but subtle */
+  .leaflet-popup-content {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* Subtle legend (not oversized) */
+  .map-legend {
+    background: rgba(30, 30, 30, 0.92);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #2f2f2f;
+    font-size: 13px;
+    color: #e5e5e5;
+  }
+
+  .map-legend h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand-orange);
+  }
+
+  .map-legend div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .legend-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 8px;
+  }
+
+  .legend-box.best { background: #FC4C03; }
+  .legend-box.moderate { background: #FF9A55; }
+  .legend-box.low { background: #666; }
+  .legend-box.user { background: #3B82F6; }
+
+  .legend-note {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #aaa;
+  }
+</style>
+
+<!-- =========================
+  LEAFLET
+========================= -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+{% if not routes %}
+  <div class="text-center py-20 text-base text-[var(--text-secondary)]">
+    No Strava route data available. Connect Strava or wait for community data to grow.
+  </div>
+{% else %}
+
+<!-- =========================
+  MAP CARD
+========================= -->
+<section class="mb-10">
+  <div class="bg-[var(--bg-card)] border border-[#333] rounded-xl p-4 shadow-lg">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <p class="text-base font-semibold">Route Map Overview</p>
+        <p class="text-sm text-[var(--text-secondary)]">
+          Based on aggregated Strava activity (not limited to your account)
+        </p>
+      </div>
+      <span class="text-xs px-2 py-1 rounded-full border border-[#444] text-[var(--text-secondary)]">
+        Source: Strava
+      </span>
+    </div>
+
+    <div id="map" class="w-full h-[520px] rounded-lg border border-[#333]"></div>
+  </div>
+</section>
+
+<!-- =========================
+  ROUTE CARDS
+========================= -->
+<section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for route in routes %}
+  <article class="bg-[var(--bg-card)] border border-[#333] rounded-xl p-5 shadow hover:border-[var(--brand-orange)] transition">
+
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-lg font-semibold">{{ route.name }}</h3>
+      <span class="text-sm text-[var(--brand-orange)] font-semibold">
+        {{ route.distance_km }} km
+      </span>
+    </div>
+
+    <div class="text-sm text-[var(--text-secondary)] space-y-1">
+      <div class="flex justify-between">
+        <span>Elevation</span>
+        <span class="text-white font-medium">{{ route.elevation_gain }} m</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Avg Pace</span>
+        <span class="text-white font-medium">{{ route.avg_pace_min_per_km }} min/km</span>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="bg-[#1a1a1a] rounded-full h-2">
+        <div class="bg-[var(--brand-orange)] h-2 rounded-full"
+             style="width: {{ route.heatmap_intensity }}%;"></div>
+      </div>
+      <p class="text-xs text-[var(--text-secondary)] mt-1">
+        Heatmap Intensity
+      </p>
+    </div>
+
+    <a href="{{ url_for('route_details', route_id=route.id) }}"
+       class="inline-block mt-3 text-sm font-semibold text-[var(--brand-orange)] hover:opacity-80">
+      View Details →
+    </a>
+  </article>
+  {% endfor %}
+</section>
+
+<!-- =========================
+  MAP SCRIPT
+========================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const URDANETA_CENTER = [15.9767, 120.5710];
+  const map = L.map("map").setView(URDANETA_CENTER, 14);
+
+  L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    { attribution: "© OpenStreetMap © CARTO" }
+  ).addTo(map);
+
+  const routes = {{ routes|tojson|safe }};
+  let bounds = [];
+
+  routes.forEach(route => {
+    if (!route.coordinates || route.coordinates.length < 2) return;
+
+    // soft glow
+    L.polyline(route.coordinates, {
+      color: "#FC4C03",
+      weight: 10,
+      opacity: 0.12
+    }).addTo(map);
+
+    // main line
+    const line = L.polyline(route.coordinates, {
+      color: "#FC4C03",
+      weight: 5,
+      opacity: 0.9
+    }).addTo(map);
+
+    line.bindPopup(`
+      <strong>${route.name}</strong><br>
+      Distance: ${route.distance_km} km<br>
+      Elevation: ${route.elevation_gain} m
+    `);
+
+    route.coordinates.forEach(pt => bounds.push(pt));
+  });
+
+  
+
+  /* LEGEND */
+  const legend = L.control({ position: "bottomright" });
+  legend.onAdd = function () {
+    const div = L.DomUtil.create("div", "map-legend");
+    div.innerHTML = `
+      <h4>Legend</h4>
+      <div><span class="legend-box best"></span> Best Routes</div>
+      <div><span class="legend-box moderate"></span> Moderate Use</div>
+      <div><span class="legend-box low"></span> Low Use</div>
+      <div><span class="legend-box user"></span> Your Routes</div>
+      <p class="legend-note">
+        Based on Strava heatmaps & feedback
+      </p>
+    `;
+    return div;
+  };
+  legend.addTo(map);
+
+});
+</script>
+
+{% endif %}
+{% endblock %}

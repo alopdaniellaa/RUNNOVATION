@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Runnovation - Landing{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center">
+    <div class="grid md:grid-cols-2 gap-10 items-center w-full">
+
+        <!-- LEFT: HERO -->
+        <div class="space-y-4">
+            <div class="flex items-center gap-3 mb-2">
+                <img src="{{ url_for('static', filename='img/logo.png') }}"
+                     alt="Runnovation Logo"
+                     class="h-10 w-10 object-contain" />
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide">Runnovation</h1>
+                    <p class="text-[11px] text-[var(--text-secondary)]">
+                        Route &amp; Strava Analytics for Urdaneta City
+                    </p>
+                </div>
+            </div>
+
+            <p class="text-sm text-white">
+                A desktop-focused decision support system that combines
+                <span class="text-[var(--brand-orange)] font-semibold">Strava route data</span>
+                and
+                <span class="text-[var(--brand-orange)] font-semibold">community feedback</span>
+                to help runners choose safer, smarter routes.
+            </p>
+
+            <ul class="text-[11px] text-[var(--text-secondary)] space-y-1 ml-4 list-disc">
+                <li>Strava-based pace, distance, and elevation analytics.</li>
+                <li>Route difficulty and safety ratings from the community.</li>
+                <li>Clear separation of Strava Data vs Runnovation App Data.</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3 mt-4">
+                <a href="{{ url_for('login') }}"
+                   class="px-5 py-2 rounded-full bg-[var(--brand-orange)] text-black font-semibold text-sm">
+                    Login
+                </a>
+                <a href="{{ url_for('register') }}"
+                   class="px-5 py-2 rounded-full border border-[var(--brand-orange)] text-[var(--brand-orange)] text-sm">
+                    Create Account
+                </a>
+            </div>
+
+            <p class="text-[10px] text-[var(--text-secondary)] mt-4">
+                Data Sources:
+                <span class="font-semibold text-white">Strava API</span> (planned integration) ·
+                <span class="font-semibold text-white">Runnovation App Feedback</span>
+            </p>
+        </div>
+
+        <!-- RIGHT: INFO CARD -->
+        <div class="bg-[var(--bg-card)] border border-[#333] rounded-2xl p-5 shadow-lg">
+            <h3 class="text-sm font-semibold mb-2">What you’ll see inside</h3>
+            <div class="space-y-3 text-[11px] text-[var(--text-secondary)]">
+                <div>
+                    <p class="font-semibold text-white">Strava Analytics Dashboard</p>
+                    <p>
+                        Pace, distance, elevation and frequency trends.
+                        <span class="block text-[10px]">
+                            Label: “Data Source: Strava API”
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <p class="font-semibold text-white">Route Analytics &amp; Details</p>
+                    <p>
+                        Route maps, heatmap intensity, and auto-computed difficulty.
+                        <span class="block text-[10px]">
+                            Basis: Strava route metrics.
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <p class="font-semibold text-white">Community Feedback</p>
+                    <p>
+                        User-submitted safety &amp; difficulty ratings and comments.
+                        <span class="block text-[10px]">
+                            Source: Runnovation App Data.
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
